@@ -1,1 +1,0 @@
-CONFIG = {'configurable' : {'thread_id' : 'thread-1'}}
