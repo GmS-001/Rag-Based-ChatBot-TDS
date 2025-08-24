@@ -14,8 +14,15 @@ from prompts import RAG_PROMPT, INITIAL_PROMPT
 from dotenv import load_dotenv
 import os
 import sqlite3 # to maka sqlite db
+from database_utils import (
+    create_tables, 
+    add_user, 
+    verify_user, 
+    add_thread_for_user, 
+    retrieve_user_threads
+)
 
-os.environ["LANGCHAIN_PROJECT"] = 'Simple Retriever V1'
+os.environ["LANGCHAIN_PROJECT"] = 'Checking RAG'
 
 load_dotenv()
 llm = ChatGoogleGenerativeAI(model = "gemini-2.5-flash", temperature=0.2)
@@ -42,6 +49,7 @@ def get_final_prompt(retriever,question,history) :
 class ChatState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
 
+@traceable(name = 'format_docs')
 def format_docs(retrieved_docs):
   context_text = "\n\n".join(doc.page_content for doc in retrieved_docs)
   return context_text
@@ -86,9 +94,11 @@ graph.add_edge("Chat Node", END)
 
 chatbot = graph.compile(checkpointer=checkpointer)
 
-def retrieve_all_threads():
-    all_threads = set()
-    for checkpoint in checkpointer.list(None):
-        all_threads.add(checkpoint.config['configurable']['thread_id'])
+# def retrieve_all_threads():
+#     all_threads = set()
+#     for checkpoint in checkpointer.list(None):
+#         all_threads.add(checkpoint.config['configurable']['thread_id'])
 
-    return list(all_threads)
+#     return list(all_threads)
+# --- Database Setup and User Management ---
+

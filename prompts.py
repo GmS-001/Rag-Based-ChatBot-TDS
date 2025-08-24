@@ -1,5 +1,6 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
+
 RAG_PROMPT = ChatPromptTemplate.from_messages([
     MessagesPlaceholder("history"),
     ("system", "You are a helpful assistant. Always consider history(given above), retrieved context, and picture(if any) text when answering."),
