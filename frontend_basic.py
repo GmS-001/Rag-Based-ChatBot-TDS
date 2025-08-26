@@ -11,7 +11,7 @@ def generate_thread_id() :
 
 def reset_chat() :
     thread_id = generate_thread_id() 
-    st.session_state['thread_id'] = thread_id # adding new thread id to session state
+    st.session_state['thread_id'] = thread_id 
     add_thread(st.session_state['thread_id'])
     st.session_state['message_history'] = []
 
@@ -69,16 +69,25 @@ if user_input :
 
     CONFIG = {'configurable': {'thread_id': st.session_state['thread_id']}}
 
-    with st.chat_message('assistant') :
-        ai_message = st.write_stream(
-            message_chunk.content for message_chunk,metadata in chatbot.stream(
-                {'messages' : HumanMessage(content = user_input)},
-                config = CONFIG,
-                stream_mode = 'messages'
-            )
-        )
-    
-    st.session_state['message_history'].append(AIMessage(content=ai_message))
+    # neha part implemented
+    response_text = ""
+    with st.chat_message('assistant'):
+        response_box = st.empty()
+        for message_chunk, _ in chatbot.stream({'messages': [HumanMessage(content = user_input)]}, config=CONFIG, stream_mode='messages'):
+            response_text += message_chunk.content
+            response_box.markdown(response_text)
 
-#chatbot.stream({"messages": [HumanMessage(content=user_input)]}, config=CONFIG)
-# uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png","wav", "mp3", "m4a"])
+    st.session_state['message_history'].append(AIMessage(content = response_text))
+
+    # my part _GMS
+    # with st.chat_message('assistant') :
+    #     ai_message = st.write_stream(
+    #         message_chunk.content for message_chunk,metadata in chatbot.stream(
+    #             {'messages' : [HumanMessage(content = user_input)]},
+    #             config = CONFIG,
+    #             stream_mode = 'messages'
+    #         )
+    #     )
+    # print('Message from AI : ',ai_message)
+    
+    # st.session_state['message_history'].append(AIMessage(content=ai_message))

@@ -14,15 +14,9 @@ from prompts import RAG_PROMPT, INITIAL_PROMPT
 from dotenv import load_dotenv
 import os
 import sqlite3 # to maka sqlite db
-from database_utils import (
-    create_tables, 
-    add_user, 
-    verify_user, 
-    add_thread_for_user, 
-    retrieve_user_threads
-)
 
-os.environ["LANGCHAIN_PROJECT"] = 'Checking RAG'
+
+os.environ["LANGCHAIN_PROJECT"] = 'Checking Prompts'
 
 load_dotenv()
 llm = ChatGoogleGenerativeAI(model = "gemini-2.5-flash", temperature=0.2)
@@ -53,15 +47,6 @@ class ChatState(TypedDict):
 def format_docs(retrieved_docs):
   context_text = "\n\n".join(doc.page_content for doc in retrieved_docs)
   return context_text
-
-async def process_image(image):
-    if not isinstance(image, str):
-        print(f"[ERROR] Expected base64 string, but got: {type(image)}")
-        return ""
-
-    if image is None or image == "":
-        return None
-    
 
 
 def chat_node(state : ChatState) : 

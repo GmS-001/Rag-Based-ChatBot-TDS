@@ -2,33 +2,21 @@
 
 import streamlit as st
 from langchain_core.messages import HumanMessage, AIMessage
-# --- Import the new backend functions ---
-from backend_basic import (
-    chatbot, 
-    add_user, 
-    verify_user, 
-    add_thread_for_user, 
-    retrieve_user_threads
-)
+from backend_basic import chatbot
+from database_utils import add_user, verify_user, add_thread_for_user, retrieve_user_threads
 import uuid
 
-# --- Utility Functions (mostly unchanged) ---
 def generate_thread_id():
     return str(uuid.uuid4())
 
-# --- Modified Functions to handle the logged-in user ---
-
 def reset_chat():
-    """Creates a new chat thread for the logged-in user."""
     thread_id = generate_thread_id()
     st.session_state['thread_id'] = thread_id
-    # Link the new thread to the current user
     add_thread_for_user(thread_id, st.session_state['username'])
-    # Add the new thread to the list of threads for the UI
     if thread_id not in st.session_state['chat_threads']:
         st.session_state['chat_threads'].insert(0, thread_id)
     st.session_state['message_history'] = []
-    st.session_state['current_thread_id'] = thread_id # Track the active thread
+    st.session_state['current_thread_id'] = thread_id 
 
 def load_conversation(thread_id):
     """Loads a past conversation from the selected thread."""
@@ -92,16 +80,21 @@ else:
                 reset_chat() # Create the first chat thread
             else:
                 # Load the most recent conversation by default
-                load_conversation(st.session_state['chat_threads'][0])
+                load_conversation(st.session_state['chat_threads'][-1])
 
     # --- Sidebar for Conversations ---
     st.sidebar.header('My Conversations')
     st.sidebar.button('Start a New Chat', on_click=reset_chat, key="new_chat_btn")
 
-    for thread_id in st.session_state['chat_threads']:
-        # Use a more descriptive name, like the first user message, or just keep it simple
-        if st.sidebar.button(f"Chat {thread_id[:8]}...", key=thread_id):
+    # Use enumerate to create a numbered list of chats for the sidebar buttons
+    total = len(st.session_state['chat_threads'])
+    for i, thread_id in enumerate(reversed(st.session_state['chat_threads'])):
+        is_current = (thread_id == st.session_state.get('current_thread_id'))
+        button_label = f"🔵 Chat {total - i}" if is_current else f"Chat {total - i}"
+        if st.sidebar.button(button_label, key=thread_id):
             load_conversation(thread_id)
+            st.rerun()
+
             
     # --- Logout Button ---
     if st.sidebar.button("Logout"):
@@ -110,9 +103,6 @@ else:
             del st.session_state[key]
         st.rerun()
 
-
-    # --- Chat Interface ---
-    
     # Display message history
     if 'message_history' in st.session_state:
         for message in st.session_state['message_history']:
@@ -123,27 +113,22 @@ else:
                 with st.chat_message("assistant"):
                     st.write(message.content)
 
-    # Handle new user input
     user_input = st.chat_input('Type here...')
-    if user_input:
-        # Append and display the new user message
-        st.session_state['message_history'].append(HumanMessage(content=user_input))
-        with st.chat_message('user'):
+    if user_input :
+
+        st.session_state['message_history'].append(HumanMessage(content = user_input))
+        with st.chat_message('user') : 
             st.write(user_input)
 
-        # Configure LangGraph with the current thread ID
+
         CONFIG = {'configurable': {'thread_id': st.session_state['current_thread_id']}}
 
-        # Stream and display the AI response
-        with st.chat_message('assistant'):
-            ai_message_content = ""
-            for chunk in chatbot.stream({'messages': [HumanMessage(content=user_input)]}, config=CONFIG):
-                # The response from your graph is in chunk['Chat Node']['messages'][-1].content
-                content_part = chunk.get('Chat Node', {}).get('messages', [{}])[-1].content
-                if content_part:
-                    ai_message_content += content_part
-                    st.write(ai_message_content)
-
-        # Append the complete AI message to history
-        if ai_message_content:
-            st.session_state['message_history'].append(AIMessage(content=ai_message_content))
+        with st.chat_message('assistant') :
+            ai_message = st.write_stream(
+                message_chunk.content for message_chunk,metadata in chatbot.stream(
+                    {'messages' : HumanMessage(content = user_input)},
+                    config = CONFIG,
+                    stream_mode = 'messages'
+                )
+            )
+        st.session_state['message_history'].append(AIMessage(content=ai_message))

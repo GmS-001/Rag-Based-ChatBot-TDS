@@ -1,3 +1,0 @@
-Need to check whether schema is needed or not.
-if the query should be sent to retriever or to llm?
-after name its printing duplicate outputs.
