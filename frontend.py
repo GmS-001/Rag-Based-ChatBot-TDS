@@ -1,7 +1,5 @@
-# frontend_basic.py (replace the entire file with this)
-
 import streamlit as st
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage, AIMessageChunk
 from backend_basic import chatbot
 from database_utils import add_user, verify_user, add_thread_for_user, retrieve_user_threads
 import uuid
@@ -24,11 +22,11 @@ def load_conversation(thread_id):
     st.session_state['message_history'] = state.values.get('messages', [])
     st.session_state['current_thread_id'] = thread_id # Set the active thread
 
-# --- Main Application Logic ---
+
 
 st.title("✨ RAG-Based ChatBot ✨")
 
-# === 1. LOGIN/REGISTRATION UI ===
+
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
 
@@ -36,7 +34,7 @@ if not st.session_state['logged_in']:
     st.header("Login / Register")
     login_tab, register_tab = st.tabs(["Login", "Register"])
 
-    # --- Login Form ---
+   
     with login_tab:
         with st.form("login_form"):
             username = st.text_input("Username")
@@ -50,7 +48,7 @@ if not st.session_state['logged_in']:
                 else:
                     st.error("Invalid username or password.")
 
-    # --- Registration Form ---
+   
     with register_tab:
         with st.form("register_form"):
             new_username = st.text_input("Choose a Username")
@@ -64,9 +62,9 @@ if not st.session_state['logged_in']:
                 else:
                     st.error(message)
 
-# === 2. MAIN CHATBOT UI (shown only after login) ===
+
 else:
-    # --- Session State Initialization for a logged-in user ---
+   
     if 'username' in st.session_state:
         st.sidebar.success(f"Logged in as **{st.session_state['username']}**")
 
@@ -79,10 +77,9 @@ else:
             if not st.session_state['chat_threads']:
                 reset_chat() # Create the first chat thread
             else:
-                # Load the most recent conversation by default
                 load_conversation(st.session_state['chat_threads'][-1])
 
-    # --- Sidebar for Conversations ---
+    
     st.sidebar.header('My Conversations')
     st.sidebar.button('Start a New Chat', on_click=reset_chat, key="new_chat_btn")
 
@@ -96,14 +93,14 @@ else:
             st.rerun()
 
             
-    # --- Logout Button ---
+    
     if st.sidebar.button("Logout"):
         # Clear the entire session state
         for key in st.session_state.keys():
             del st.session_state[key]
         st.rerun()
 
-    # Display message history
+# Display past messages first (not the new one)
     if 'message_history' in st.session_state:
         for message in st.session_state['message_history']:
             if isinstance(message, HumanMessage):
@@ -113,22 +110,27 @@ else:
                 with st.chat_message("assistant"):
                     st.write(message.content)
 
-    user_input = st.chat_input('Type here...')
-    if user_input :
-
-        st.session_state['message_history'].append(HumanMessage(content = user_input))
-        with st.chat_message('user') : 
+    # If user types something new
+    user_input = st.chat_input("Type here...")
+    if user_input:
+        # Show user message
+        st.session_state['message_history'].append(HumanMessage(content=user_input))
+        with st.chat_message("user"):
             st.write(user_input)
 
+        # Stream assistant response
+        response_text = ""
+        with st.chat_message("assistant"):
+            response_box = st.empty()
+            CONFIG = {'configurable': {'thread_id': st.session_state['current_thread_id']}}
+            for message_chunk, _ in chatbot.stream(
+                {'messages': [HumanMessage(content=user_input)]},
+                config=CONFIG,
+                stream_mode='messages'
+            ):
+                if isinstance(message_chunk, AIMessageChunk) and message_chunk.content:
+                    response_text += message_chunk.content
+                    response_box.markdown(response_text)
 
-        CONFIG = {'configurable': {'thread_id': st.session_state['current_thread_id']}}
-
-        with st.chat_message('assistant') :
-            ai_message = st.write_stream(
-                message_chunk.content for message_chunk,metadata in chatbot.stream(
-                    {'messages' : HumanMessage(content = user_input)},
-                    config = CONFIG,
-                    stream_mode = 'messages'
-                )
-            )
-        st.session_state['message_history'].append(AIMessage(content=ai_message))
+        # Append only once
+        st.session_state['message_history'].append(AIMessage(content=response_text))
