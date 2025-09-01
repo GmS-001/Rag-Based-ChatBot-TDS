@@ -2,3 +2,7 @@ __pycache__
 .env
 chatbot.db
 frontend_basic.py
+check.py
+check.txt
+chatbot.db-shm
+chatbot.db-wal
