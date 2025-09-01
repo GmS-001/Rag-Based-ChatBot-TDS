@@ -3,7 +3,7 @@
 A **Retrieval-Augmented Generation (RAG)** powered chatbot built for the **Tools in Data Science (TDS)** course at **IIT Madras**.  
 This virtual assistant provides **accurate, context-aware answers** to students' queries using course materials, while also being capable of answering general knowledge questions gracefully.  
 
-Built with **LangChain**, **Streamlit**, and a **SQLite backend**, this project is a demonstration of a production-ready RAG application with authentication, conversation threading, and persistent chat history.
+Built with **LangGraph**, **LangChain**, **LangSmith**, **Streamlit**,**Selenium** and a **SQLite backend**, this project demonstrates a **production-grade RAG application** with authentication, conversation threading, and persistent chat history.
 
 ---
 
@@ -14,6 +14,9 @@ Built with **LangChain**, **Streamlit**, and a **SQLite backend**, this project 
 
 - **Fallback General Knowledge Answers**  
   When no course context is available, the bot clearly states this and provides helpful responses using general reasoning.
+
+- **LangSmith-Backed LLM Tracing & Analysis**  
+  Used **LangSmith** to monitor, debug, and optimize LLM calls for better transparency and reliability in production.
 
 - **Interactive Streamlit Frontend**  
   - Chat-like UI for students.  
