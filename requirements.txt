@@ -1,25 +1,18 @@
-# Core framework
 streamlit
-
-# LLMs and RAG
 langchain
 chromadb
 openai
 tiktoken
-
-# Data handling
 numpy
 pandas
-
-# Environment management
 python-dotenv
-
-# Parsing PDFs / scraping (if you use PDFs for vectorstore)
 PyPDF2
 pdfplumber
 beautifulsoup4
 lxml
 requests
-
-# For debugging/logging and evaluation
 langsmith
+langgraph
+langchain-google-genai
+faiss-cpu
+bcrypt
