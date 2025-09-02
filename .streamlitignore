@@ -1,0 +1,8 @@
+# Ignore notebooks and other non-deployment files
+notebooks/
+*.ipynb
+*.md
+*.pdf
+*.png
+*.jpg
+*.jpeg
