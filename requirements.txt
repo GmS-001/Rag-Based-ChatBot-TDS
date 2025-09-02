@@ -11,7 +11,7 @@ langchain-google-genai
 langsmith
 
 # LangGraph (latest for checkpoint support)
-langgraph
+langgraph>=0.2.35
 
 # Vector stores
 faiss-cpu
