@@ -1,6 +1,6 @@
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
-from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.checkpoints.sqlite import SqliteSaver
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_core.messages import BaseMessage, AIMessage, SystemMessage 
 from langchain.retrievers import MultiQueryRetriever
