@@ -11,6 +11,7 @@ langchain-google-genai
 langsmith
 
 # LangGraph (latest for checkpoint support)
+langgraph-checkpoint-sqlite
 langgraph==0.6.6
 
 
