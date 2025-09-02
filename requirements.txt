@@ -1,18 +1,35 @@
+# Core
 streamlit
+python-dotenv
+uuid
+
+# LangChain ecosystem
 langchain
+langchain-core
+langchain-community
+langchain-google-genai
+langsmith
+
+# LangGraph (latest for checkpoint support)
+langgraph
+
+# Vector stores
+faiss-cpu
 chromadb
-openai
-tiktoken
+
+# Data handling
 numpy
 pandas
-python-dotenv
-PyPDF2
-pdfplumber
+
+# Web scraping (optional proof files)
 beautifulsoup4
 lxml
 requests
-langsmith
-langgraph
-langchain-google-genai
-faiss-cpu
+
+# Database
+sqlite3-binary
 bcrypt
+
+# PDF processing (if used)
+PyPDF2
+pdfplumber
