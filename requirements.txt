@@ -1,35 +1,11 @@
-# Core
 streamlit
 python-dotenv
-uuid
-
-# LangChain ecosystem
-langchain
-langchain-core
-langchain-community
-langchain-google-genai
-langsmith
-
-# LangGraph (latest for checkpoint support)
-langgraph==0.6.6
-
-
-# Vector stores
-faiss-cpu
-chromadb
-
-# Data handling
-numpy
-pandas
-
-# Web scraping (optional proof files)
-beautifulsoup4
-lxml
-requests
-
-# Database
 bcrypt
-
-# PDF processing (if used)
-PyPDF2
-pdfplumber
+# --- Pinned versions for stability ---
+langchain==0.2.5
+langchain-core==0.2.9
+langchain-community==0.2.5
+langchain-google-genai==1.0.6
+langgraph==0.1.0
+langsmith
+faiss-cpu
