@@ -27,7 +27,6 @@ lxml
 requests
 
 # Database
-sqlite3-binary
 bcrypt
 
 # PDF processing (if used)
