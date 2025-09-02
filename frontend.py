@@ -1,7 +1,7 @@
 import streamlit as st
 from langchain_core.messages import HumanMessage, AIMessage, AIMessageChunk
 from backend_basic import chatbot
-from database_utils import add_user, verify_user, add_thread_for_user, retrieve_user_threads
+from database_utils import add_user, verify_user, add_thread_for_user, retrieve_user_threads, create_tables
 import uuid
 import os
 from dotenv import load_dotenv
@@ -10,6 +10,7 @@ import streamlit as st
 load_dotenv()  # Loads .env for local dev
 
 GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY", os.getenv("GOOGLE_API_KEY"))
+create_tables()
 
 def generate_thread_id():
     return str(uuid.uuid4())
